@@ -1854,11 +1854,10 @@ RegisterNUICallback('buyItem', function(data, cb)
             options = {
                 {
                     label = 'Käteinen',
-                    value = 'cash',
-                },
-                {
+                    value = 'cash'
+                }, {
                     label = 'Kortti',
-                    value = 'bank',
+                    value = 'bank'
                 }
             }
         }
