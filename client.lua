@@ -1843,8 +1843,32 @@ RegisterNUICallback('swapItems', function(data, cb)
 end)
 
 RegisterNUICallback('buyItem', function(data, cb)
+    local input = lib.inputDialog('Maksutapahtuma', {
+        {
+            type = 'select', 
+            label = 'Maksutapa', 
+            required = true,
+            default = 'bank',
+            icon = 'credit-card',
+            clearable = true,
+            options = {
+                {
+                    label = 'Käteinen',
+                    value = 'cash',
+                },
+                {
+                    label = 'Kortti',
+                    value = 'bank',
+                }
+            }
+        }
+    }) if not input then
+        cb(false)
+        return
+    end
+
 	---@type boolean, false | { [1]: number, [2]: SlotWithItem, [3]: SlotWithItem | false, [4]: number}, NotifyProps
-	local response, data, message = lib.callback.await('ox_inventory:buyItem', 100, data)
+	local response, data, message = lib.callback.await('ox_inventory:buyItem', 100, data, input?[1] or false)
 
 	if data then
 		updateInventory({
