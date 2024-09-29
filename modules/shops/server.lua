@@ -167,7 +167,6 @@ local function canAffordItem(inv, currency, price)
 	end
 
 	local canAfford = price >= 0 and Inventory.GetItemCount(inv, currency) >= price
-
 	return canAfford or {
 		type = 'error',
 		description = locale('cannot_afford', ('%s%s'):format((currency == 'money' and locale('$') or math.groupdigits(price)), (currency == 'money' and math.groupdigits(price) or ' '..Items(currency).label)))
