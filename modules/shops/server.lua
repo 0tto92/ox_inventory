@@ -155,6 +155,7 @@ end)
 
 local function canAffordItem(inv, currency, price)
     if currency == 'bank' then
+        -- inv.id = source
         local bankBalance = exports.pefcl:getDefaultAccountBalance(inv.id)
         if bankBalance.data < price then
             return {
@@ -175,6 +176,7 @@ end
 
 local function removeCurrency(inv, currency, price)
 	if currency == 'bank' then
+        -- inv.id = source
 		exports.pefcl:removeBankBalance(inv.id, { amount = price, message = 'Maksutapahtuma'})
 		return
 	end
