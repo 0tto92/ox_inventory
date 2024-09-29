@@ -154,6 +154,18 @@ lib.callback.register('ox_inventory:openShop', function(source, data)
 end)
 
 local function canAffordItem(inv, currency, price)
+    if currency == 'bank' then
+        local bankBalance = exports.pefcl:getDefaultAccountBalance(inv.id)
+        if bankBalance.data < price then
+            return {
+				type = 'error',
+				description = 'Sinulta puuttuu ' .. price - bankBalance.data .. '€ tililtä'
+			}
+        end
+
+		return true
+	end
+
 	local canAfford = price >= 0 and Inventory.GetItemCount(inv, currency) >= price
 
 	return canAfford or {
@@ -163,6 +175,11 @@ local function canAffordItem(inv, currency, price)
 end
 
 local function removeCurrency(inv, currency, price)
+	if currency == 'bank' then
+		exports.pefcl:removeBankBalance(inv.id, { amount = price, message = 'Maksutapahtuma'})
+		return
+	end
+
 	Inventory.RemoveItem(inv, currency, price)
 end
 
@@ -181,7 +198,7 @@ local function isRequiredGrade(grade, rank)
 	end
 end
 
-lib.callback.register('ox_inventory:buyItem', function(source, data)
+lib.callback.register('ox_inventory:buyItem', function(source, data, payment)
 	if data.toType == 'player' then
 		if data.count == nil then data.count = 1 end
 
@@ -220,6 +237,8 @@ lib.callback.register('ox_inventory:buyItem', function(source, data)
 			end
 
 			local currency = fromData.currency or 'money'
+            if payment == 'bank' and currency == 'money' then currency = 'bank' end
+
 			local fromItem = Items(fromData.name)
 
 			local result = fromItem.cb and fromItem.cb('buying', fromItem, playerInv, data.fromSlot, shop)
